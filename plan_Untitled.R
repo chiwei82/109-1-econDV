@@ -14,7 +14,7 @@ locale = locale(encoding = "BIG5"), skip = 3)
 dataReady = {
   downloaddata %>%
   rename(
-    "年"="X1"
+    "�<U+FFFD>"="X1"
   ) %>%
   mutate(
     across(
@@ -30,7 +30,7 @@ gg_taiwanEconomicGrowth = {
     ggplot()+
     geom_line(
       aes(
-        x=年, y=`經濟成長(%)`
+        x=�<U+FFFD>, y=`經�<U+FFFD><U+FFFD>�長(%)`
       )
     )
 },

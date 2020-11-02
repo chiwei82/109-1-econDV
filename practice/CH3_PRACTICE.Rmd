@@ -1,0 +1,151 @@
+---
+title: "Untitled"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+a <- 3
+cc <- 15
+examplePlan <- drake::drake_plan(
+  target1 = {
+    a + 5 -> b
+    cc <- 0
+    if (b < 10) b 
+  },
+  target2 = {
+    cc 
+  },
+  target3 = {
+    target1 + a
+  }
+)
+```
+
+```{r}
+make(examplePlan)
+```
+
+```{r}
+readd(target1)
+readd(target2)
+readd(target3)
+```
+
+```{r}
+planExample <-
+  drake::drake_plan(
+    target1 = {
+      download.file("https://.....")
+    },
+    targetN = {
+      save(someObject, "myResult.rda")
+    }
+  ) 
+```
+
+```{r}
+planExample <-
+  drake::drake_plan(
+    target1 = {
+      download.file(file_in("https://....."))
+    },
+    targetN = {
+      save(someObject, file_out("myResult.rda"))
+    }
+  )
+```
+
+```{r}
+Attach() # attach .R_Cache 
+
+obj1 <- 5
+Store(obj1)
+
+obj1 <- 3 # Won't change obj1 in cache, but create an obj1 in global environment.
+Store(obj1) # Unless store it in cache.
+
+Remove(obj1)
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

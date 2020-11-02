@@ -1,0 +1,579 @@
+---
+title: "Untitled"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+2.1 Data frame
+A special type of list:
+
+each element MUST be an atomic vector and have the same length (aka number of observations). (atomic vector requirement can be dropped in an extended data frame class, tibble)
+More extraction methods and dplyr provides many useful tools.
+
+It is still a list. So you can use purrr package as well
+
+```{r}
+
+DF=data.frame(
+  y=c(1,3,5),
+  x=c(0,-1,1)
+)
+
+```
+
+mutate(which variable to mutate, how it be mutated) -> to the variable 
+
+```{r}
+
+# without dplyr
+{
+  DF$z=DF$y+(DF$x)^2
+  
+  mean(DF$z)
+}
+
+# with dplyr
+{
+  mutate(DF, z=y+x^2) -> DF
+  summarise(DF, meanz=mean(z)) -> DF_meanz
+  DF_meanz
+  mean(DF$z)
+}
+
+# Using pipe operator
+{
+  DF %>%
+    mutate(z=y+x^2) %>%
+    summarise(meanz=mean(z))
+}
+
+```
+
+with(data, expression): 使用data裡的元素去完成expression.
+
+within(data, expression): 使用data裡的元素去完成expression, expression裡新創的物件都會加到data裡
+
+with -> 只有回傳值
+within -> 會修改原物件
+
+```{r}
+
+with(DF,{
+  w=y-x^2
+  w # 沒這行便沒有回傳值
+  } )
+
+within(DF, 
+       {
+         w=y-x^2
+         q=3*y+w
+         })
+
+```
+
+simplifyDataFrame = F -> give user a list class
+fromJSON -> default give user a data.frame class
+
+```{r}
+
+targetUrl <- "https://data.ntpc.gov.tw/api/datasets/71CD1490-A2DF-4198-BEF1-318479775E8A/json"
+library(jsonlite)
+list_newTaipeiYouBike <- fromJSON(
+  targetUrl, simplifyDataFrame = F) # list class
+df_newTaipeiYouBike <- fromJSON(
+  targetUrl) # data.frame class
+
+```
+
+2.4.2 mutate/transmute
+mutate -> 全都會留下+ 新增的區域，變異 (比對新舊，將舊的換成新的)
+transmute -> 只留下有提到的變數
+
+
+```{r}
+
+df_newTaipeiYouBike %>%
+  mutate(
+    tot=as.integer(tot),
+    sbi=as.integer(sbi),
+    bemp=as.integer(bemp),
+    車位落差=tot-(sbi+bemp), # 創立新變數
+    有落差=(車位落差!=0) # 前面出現過的可立刻拿來運算
+  ) -> df_newTaipeiYouBike2
+
+df_newTaipeiYouBike %>%
+  transmute( # 只留下這裡的變數
+    tot=as.integer(tot),
+    sbi=as.integer(sbi),
+    bemp=as.integer(bemp),
+    車位落差=tot-(sbi+bemp), # 創立新變數
+    有落差=(車位落差!=0) # 前面出現過的可立刻拿來運算
+  ) -> df_newTaipeiYouBike3
+
+```
+
+```{r}
+{
+  View(df_newTaipeiYouBike2)
+  View(df_newTaipeiYouBike3)
+}
+```
+
+Use {} to turn a multiple-steps task into a block.
+
+Give you a better sense of what you are doing
+
+The task can be re-used easily when we talk about drake.
+
+The name can also represent a valued object. The value of that object will be the LAST LINE produced value ONLY IF that line will show value on your screen.要呈現在螢幕上的物件放在最後一行
+
+Useful when you later want to turn it into function body, a plan, etc.
+
+```{r}
+viewDataFrames = { 
+  View(df_newTaipeiYouBike2)
+  View(df_newTaipeiYouBike3)
+}
+viewDataFrames
+
+```
+
+```{r}
+viewDataFrames = { 
+  View(df_newTaipeiYouBike2)
+  View(df_newTaipeiYouBike3)
+  df_newTaipeiYouBike2
+}
+viewDataFrames
+```
+
+2.5.2 summarise
+
+```{r}
+df_newTaipeiYouBike %>%
+  summarise(
+    sna=sum(is.na(sna)),
+    sno=sum(is.na(sno))
+  )
+
+# Use %>% to observe formula body
+df_newTaipeiYouBike %>%
+  summarise(
+    sna=sna %>% {sum(is.na(.))},
+    sno=sno %>% {sum(is.na(.))}
+  )
+```
+
+2.5.3 across
+
+across(.cols, .fns) tidy-select:
+
+Arguments:
+
+.cols follow tidy-select, such as
+
+針對變數varm到varq間欄位： .cols=varm:varq selects all variables from varm to varq.
+
+針對所有欄位：.cols=everythins()
+
+針對AAA及BBB兩個欄位: .cols=all_of(c("AAA","BBB"))
+
+針對AAA及BBB任何欄位：.cols=any_of(c("AAA","BBB")) , 用在不確定哪個欄位會在，但有在的話就針對它； 相對於all_of，any_of就算寫到不存在的欄位也不會有error。
+
+針對is.numeric函數回傳為T的欄位： .cols=where(is.numeric) .
+
+針對欄位名稱有area字眼的欄位：.cols=contains("area")
+
+針對橍位名稱滿足regex “a$”的欄位: .cols=matches("a\$")
+
+,fns -> 類似map 的 ~.x
+
+```{r}
+data01$df_newTaipeiYouBike ->df_newTaipeiYouBike
+names(df_newTaipeiYouBike)
+```
+
+```{r}
+df_newTaipeiYouBike %>%
+  transmute(
+    across(
+      .cols=tot:mday,
+      .fns = ~.x
+    )
+  )
+
+df_newTaipeiYouBike %>%
+  transmute(
+    across(
+      .cols=any_of(c("aaa", "sna")),
+      .fns = ~.x
+    )
+  ) 
+```
+
+選出來的欄位可進一步
+
+& 交集，| 連集， ! 補集合， c() 多群集合。
+
+```{r}
+df_newTaipeiYouBike %>%
+  transmute(
+    across(
+      .cols= contains("a") & sbi:sareaen,
+      .fns= ~.x
+    )
+  )
+```
+
+```{r}
+# summarise(., across(selector, functions))
+df_newTaipeiYouBike %>%
+  summarise(
+    across(
+      everything(),
+      ~{sum(is.na(.x))}
+    )
+  )
+```
+
+2.5.4 修正class
+
+```{r}
+youBikeRightClass = { # deal with class
+  df_newTaipeiYouBike %>% map(class)
+  
+  numericVs <- c("tot","sbi","lat","lng")
+  
+  df_newTaipeiYouBike %>% 
+    mutate(
+      across(
+        all_of(numericVs),
+        as.numeric
+      )
+    ) -> df_newTaipeiYouBike2
+  
+  factorVs <- c("sarea")
+  df_newTaipeiYouBike2 %>%
+    mutate(
+      across(
+        all_of(factorVs),
+        as.factor
+      )
+    ) -> df_newTaipeiYouBike3
+  
+  df_newTaipeiYouBike3 %>%
+    mutate(
+      mday=ymd_hms(mday)
+    )
+}
+```
+
+2.5.4.1 檢查NA
+
+```{r}
+checkNA={
+  totNA <- function(.x) sum(is.na(.x))
+  smplSize <- function(.x) length(.x) - totNA(.x)
+  youBikeRightClass %>%
+    summarise(
+      across(
+        everything(),
+        list(na=totNA, size=smplSize) # na, size會成為欄位名稱一部份
+      )
+    )
+}
+```
+
+mutate用法:
+
+1ˊ 先用原始資料 串接傳入 mutate
+
+2ˊ 設定mutate (比對新舊，汰舊換新)
+
+3ˊ 中間可以加上 across , across(.cols, .fns)
+
+4ˊ 傳進新變數裡(或可以覆蓋舊的)，但老師沒有這樣用過
+
+
+Our gov’t uses xlsx format a lot. However, sometimes you will encounter some error. An easy way to solve it is to upload to Google Sheets which read almost everything with accuracy. Then use googlesheets4 package to import.
+
+```{r}
+Copy
+library(googlesheets4)
+
+read_sheet(
+  "https://docs.google.com/spreadsheets/d/1PPWeFGqedVsgZmV81MeA0oJDCBkj5upkHltlWap7xUY/edit#gid=1835013852", 
+  skip=3
+) -> startSalary
+
+```
+If not working, in Console, try
+
+```{r}
+
+Copy
+gs4_deauth()
+gs4_auth()
+
+```
+
+2.7 Parsing functions
+
+Though as.{class} functions are good,readr::parse_... functions are even better. If something goes wrong, it gives you clear information.
+readr package has several parse_… function to parse characters into different types of vectors:
+
+parse_double, parse_character, … , etc
+Arguments:
+
+na=c(....) defines what counts as NA.
+
+locale=locale(...) where locale(...) creates an object that defines and interprets the string accordingly.
+
+locale(decimal_mark=".", grouping_mark=","): 小數點為.，千分位點為, 。
+
+```{R}
+
+price <- c("$10.000,23", "$999,15", "n/a")
+parse_number(price,
+             na="n/a",
+             locale=locale(decimal_mark = ",", grouping_mark = "."))
+
+```
+
+```{r}
+{
+  startSalary %>% map(class)
+  
+  # 以字串形式觀察原始資料以理解na註記形式
+  startSalary %>%
+    map(
+      ~parse_character(as.character(.x))
+    )
+
+  # 去除34-36行
+  startSalary %>%
+    slice(
+      1:33
+    ) -> startSalary2
+  
+  # 設定class
+  startSalary2 %>%
+    mutate(
+      across(
+        `高級中等(高中、高職)`:大學,
+        ~parse_number(as.character(.x), na="...")
+      )
+    ) -> startSalary3
+  
+  # 改變數名稱
+  startSalary3 %>%
+    rename(
+      year=`...1`
+    )
+}
+```
+
+2.8 Group by
+
+```{R}
+{
+  # 全部有多少個車位
+  youBikeRightClass %>%
+    summarise(
+      tot=sum(tot)) -> totAll
+  
+  # 各行政區有幾個車位
+  youBikeRightClass %>%
+    group_by(sarea) %>%
+    summarise(
+      tot=sum(tot)
+      ) -> totByArea
+
+  # 那個行政區最多/最少
+  totByArea %>%
+    arrange(tot) 
+  totByArea %>%
+    arrange(desc(tot))
+  # 前三名
+  totByArea %>%
+    slice_max(tot, n=3)
+  # 前50%
+  totByArea %>%
+    slice_max(tot, prop=0.5)
+  # 後三名
+  totByArea %>%
+    slice_min(tot, n=3)
+  
+}
+```
+
+2.9 filter
+
+```{r}
+{
+  # 找出總車位數大於20的樣本
+  youBikeRightClass %>%
+    filter(
+      tot > 20
+    )
+  
+  # 找出總車位數大於20的樣本
+  youBikeRightClass %>%
+    filter(
+      tot > 20 & sarea=="汐止區"
+    )
+  
+  youBikeRightClass %>%
+    filter(
+      tot > 20 , sarea=="汐止區" # 或，分隔
+    )
+
+}
+```
+
+2.10 select
+
+```{r}
+{
+  youBikeRightClass %>% 
+    select(sno:tot)
+  youBikeRightClass %>% 
+    select(1:3)
+  youBikeRightClass %>% 
+    select(contains("a"))
+  youBikeRightClass %>% 
+      select(matches("a$"))
+}
+```
+
+2.11.1 WDI package
+
+```{r}
+library(WDI)
+```
+
+```{r}
+WDIsearch(string="Inflation") -> inflation_search
+inflation_search
+```
+
+2.13.1 XML data
+```{r}
+library(xml2)
+read_xml("https://www.dgbas.gov.tw/public/data/open/Stat/price/PR0101A1M.xml") -> cpiTW
+```
+
+XML is a special data storage format. To extract data from the file, you need to know XPath. Fortunately, in R everything can be as_list.
+
+```{r}
+xml2::as_list(cpiTW) -> cpiTW
+```
+
+```{r}
+cpiTW[["DataSet"]][[1]] %>%
+  unlist()
+
+cpiTW[["DataSet"]] %>%
+  map_dfr(
+    unlist
+  ) -> df_cpiTW
+```
+
+
+```{r}
+{
+  library(googlesheets4)
+  library(econDV)
+
+  startSalary %=% read_sheet(
+    "https://docs.google.com/spreadsheets/d/1PPWeFGqedVsgZmV81MeA0oJDCBkj5upkHltlWap7xUY/edit#gid=1835013852",
+    skip = 3
+  )
+
+  world_inflation %=% WDI::WDI(
+    indicator = "FP.CPI.TOTL.ZG"
+  )
+
+  df_cpiTW %=% {
+    con <- url("https://www.dropbox.com/s/8585yr3t0bbcb5b/df_cpiTW.rda?dl=1")
+    load(file = con)
+    df_cpiTW
+  }
+
+  df_newTaipeiYouBike %=% jsonlite::fromJSON(
+    "https://data.ntpc.gov.tw/api/datasets/71CD1490-A2DF-4198-BEF1-318479775E8A/json"
+  ) # data.frame class
+
+  drake::make(plan_dataCleaning)
+}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,9 @@
 ---
 title: "plan_taiwanBusinessCycles"
 output: html_document
+params:
+  key: "公Aa-Ⅳ-1"
+  memberGmails: ["mary@gm.ntpu.edu.tw","cook@gmail.com"]
 ---
 
 key請由課綱選：
