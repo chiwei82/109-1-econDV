@@ -9,6 +9,7 @@ library(dplyr)
 library(showtext)
 library(stringr)
 library(jsonlite)
+library(lubridate)
 
 rprojroot::is_rstudio_project -> .pj
 .pj$make_fix_file() -> .root
@@ -45,8 +46,8 @@ subset_of_income <- data.frame(
   `年` = TIME_PERIOD ,
 `國內生產毛額GDP(名目值，百萬元)`=Item_VALUE),
 
-# >> ggpath--------------
-ggpath = {
+# >> ggpoint--------------
+ggpoint = {
   myggplot +
     geom_point(
       mapping =  aes(x = `年`, y = `國內生產毛額GDP.名目值.百萬元.`  ),
@@ -54,12 +55,24 @@ ggpath = {
     )
 },
 
+# >> ggTWGDPTrend--------------
+ggTWGDPTrend= {
+  ggpoint +
+    labs(
+      title="國內生產毛額GDP走勢圖(1951-2019)",
+      subtitle="年,國內生產毛額GDP(名目值，百萬元)",
+      caption="資料出處: 政府開放資料平台https://data.gov.tw/dataset/10359",
+      y="",
+      x=""
+    )+theme_classic()
+},
+
 # >> save_ggplot--------------
 save_ggplot = {
 
   ggsave(
-    plot=ggpath,
-    filename=file.path(imageFolder, "myPlot.svg"),
+    plot=ggTWGDPTrend,
+    filename=file.path(imageFolder, "ggTWGDPTrend.svg"),
     width = 8,
     height = 5
   )
