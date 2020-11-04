@@ -1,0 +1,12 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+
+remotes::install_github(
+  "tpemartin/econDV",
+  force =T
+)
+```

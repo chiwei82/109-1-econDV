@@ -1,7 +1,0 @@
-"0","knitr::opts_chunk$set(echo = TRUE)"
-"0","font_add(""Noto Sans TC"", # 把字形加到R系統裡，取名為notoSansTC family"
-"0","         regular=""NotoSansTC-Regular.otf"", # family裡的regular字體檔名"
-"0","         bold=""NotoSansTC-Bold.otf"") # family裡的bold字體檔名"
-"2","Error in font_add(""Noto Sans TC"", regular = ""NotoSansTC-Regular.otf"",  : 
-  沒有這個函數 ""font_add""
-"
