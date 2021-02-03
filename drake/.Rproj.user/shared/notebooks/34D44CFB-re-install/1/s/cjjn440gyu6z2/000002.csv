@@ -1,0 +1,20 @@
+"0",".ghToken=""To be announced in Google classroom"""
+"0","install.packages(""devtools"")"
+"2","WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+"
+"2","Installing package into ．C:/Users/tonyf/Documents/R/win-library/4.0・
+(as ．lib・ is unspecified)
+"
+"2","also installing the dependencies ．utf8・, ．BH・, ．pillar・, ．pkgconfig・, ．vctrs・, ．askpass・, ．credentials・, ．sys・, ．zip・, ．gitcreds・, ．ini・, ．lazyeval・, ．base64enc・, ．later・, ．fastmap・, ．highr・, ．markdown・, ．xfun・, ．diffobj・, ．fansi・, ．rematch2・, ．tibble・, ．clipr・, ．crayon・, ．curl・, ．fs・, ．gert・, ．gh・, ．glue・, ．lifecycle・, ．purrr・, ．rappdirs・, ．rprojroot・, ．whisker・, ．yaml・, ．processx・, ．R6・, ．assertthat・, ．digest・, ．rex・, ．htmltools・, ．htmlwidgets・, ．magrittr・, ．crosstalk・, ．promises・, ．mime・, ．openssl・, ．cachem・, ．prettyunits・, ．xopen・, ．brew・, ．commonmark・, ．knitr・, ．Rcpp・, ．stringi・, ．stringr・, ．xml2・, ．brio・, ．evaluate・, ．praise・, ．ps・, ．waldo・, ．usethis・, ．callr・, ．cli・, ．covr・, ．desc・, ．DT・, ．ellipsis・, ．httr・, ．jsonlite・, ．memoise・, ．pkgbuild・, ．pkgload・, ．rcmdcheck・, ．rlang・, ．roxygen2・, ．rstudioapi・, ．rversions・, ．sessioninfo・, ．testthat・, ．withr・
+
+"
+"1","
+"
+"1",""
+"1","  There is a binary version available but the source
+  version is later"
+"1",""
+"1",":
+"

@@ -1,0 +1,51 @@
+"0",".ghToken=""cef19342f50cc7fc4cc56e685f1543d99f88d70b"""
+"0","install.packages(""devtools"")"
+"2","WARNING: Rtools is required to build R packages but is not currently installed. Please download and install the appropriate version of Rtools before proceeding:
+
+https://cran.rstudio.com/bin/windows/Rtools/
+"
+"2","Installing package into ¡¥C:/Users/tonyf/Documents/R/win-library/4.0¡¦
+(as ¡¥lib¡¦ is unspecified)
+"
+"2","å˜—è©¦ URL 'https://cran.rstudio.com/bin/windows/contrib/4.0/devtools_2.3.2.zip'
+"
+"2","Content type 'application/zip'"
+"2"," length 414710 bytes (404 KB)
+"
+"2","downloaded 404 KB
+
+"
+"1","package â€˜devtoolsâ€™ successfully unpacked and MD5 sums checked
+"
+"1","
+"
+"1",""
+"1","The downloaded binary packages are in
+	C:\Users\tonyf\AppData\Local\Temp\RtmpIFD2zV\downloaded_packages"
+"1",""
+"1","
+"
+"0","install.packages(""remotes"")"
+"1","Error in "
+"1",""
+"1","install.packages"
+"1",""
+"1"," : "
+"1",""
+"1","Updating loaded packages"
+"1",""
+"1","
+"
+"0","remotes::install_github("
+"0","  ""tpemartin/econDV"","
+"0","  auth_token = .ghToken"
+"0",")"
+"2","éŒ¯èª¤: Failed to install 'unknown package' from GitHub:
+  HTTP error 401.
+  Bad credentials
+
+  Rate limit remaining: 57/60
+  Rate limit reset at: 2021-02-03 09:33:57 UTC
+
+  
+"
