@@ -1,0 +1,29 @@
+{
+    "id": "528B6320",
+    "path": "~/GitHub/109-1-econDV/drake/pactice_ch7.Rmd",
+    "project_path": "pactice_ch7.Rmd",
+    "type": "r_markdown",
+    "hash": "2511198565",
+    "contents": "",
+    "dirty": false,
+    "created": 1612493833239.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "72,0",
+        "scrollLine": "52",
+        "last_setup_crc32": "ACDC536187dc96ba",
+        "chunk_output_type": "console"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1612494272,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1612494272730,
+    "read_only": false,
+    "read_only_alternatives": []
+}

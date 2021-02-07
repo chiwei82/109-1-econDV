@@ -1,0 +1,27 @@
+{
+    "id": "38983A21",
+    "path": "~/GitHub/109-1-econDV/drake/re-install.rmd",
+    "project_path": "re-install.rmd",
+    "type": "r_markdown",
+    "hash": "2163864179",
+    "contents": "",
+    "dirty": false,
+    "created": 1612494076379.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "22,24",
+        "scrollLine": "9",
+        "chunk_output_type": "console"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1612494240,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1612494240283,
+    "read_only": false,
+    "read_only_alternatives": []
+}

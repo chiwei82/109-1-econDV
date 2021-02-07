@@ -1,0 +1,65 @@
+---
+title: "台灣景氣循環"
+drake_cache: ".chart1_sunny" # 請取一個你認為幾乎不會有人和你一樣的cache名稱
+output: html_document
+params:
+  key: "公Aa-Ⅳ-1" # 課綱編號，多個可用 ["key1", "key2"]
+  memberNames: ["Mary", "cook"] # 組員姓名
+  memberIds: ["410888292", "410772938"] # 學號
+  imgPreName: "taiwanEconomicsGrowth.svg" # ggsave時的檔名
+  imgPostName: "" # svg後製時的檔名
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, drake=F}
+knitr::opts_chunk$set(echo = TRUE, eval=F)
+library(drake)
+library(econDV)
+library(dplyr)
+
+```
+
+## makecondition
+
+```{r makecondition}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(googledrive)
+library(readr)
+library(ggplot2)
+library(econDV)
+
+font_families_google() %>%
+  stringr::str_subset(regex("noto", ignore_case = T))  
+font_add_google("Noto Sans TC") 
+
+rprojroot::is_rstudio_project -> .pj
+.pj$make_fix_file() -> .root
+
+imageFolder <- file.path(.root(),"img")
+dataFolder <- file.path(.root(),"data")
+
+if(!dir.exists(imageFolder)) dir.create(imageFolder)
+if(!dir.exists(dataFolder)) dir.create(dataFolder)
+
+xfun::download_file("https://www.dropbox.com/s/7b3nbgfx5bgft8g/drake_annotationmaps.Rdata?dl=1")
+load("drake_annotationmaps.Rdata")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

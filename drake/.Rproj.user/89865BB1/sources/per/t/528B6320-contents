@@ -1,0 +1,73 @@
+---
+title: "台灣景氣循環"
+drake_cache: ".chart1_sunny" # 請取一個你認為幾乎不會有人和你一樣的cache名稱
+output: html_document
+params:
+  key: "公Aa-Ⅳ-1" # 課綱編號，多個可用 ["key1", "key2"]
+  memberNames: ["Mary", "cook"] # 組員姓名
+  memberIds: ["410888292", "410772938"] # 學號
+  imgPreName: "taiwanEconomicsGrowth.svg" # ggsave時的檔名
+  imgPostName: "" # svg後製時的檔名
+editor_options: 
+  chunk_output_type: console
+---
+
+key請由課綱選：
+新課綱：<https://docs.google.com/document/d/1o8UQIpy6GFqCgfUxc47fqyAPuEYrk3FLd7bB1EhYMVg>
+
+  * 上傳時請交你的「Rmd檔」及「ggsave的SVG檔」，若有後製也請交上後製的SVG。由一個組員上傳到google classroom的作業繳交處。（通常是這次作業訊息公告的位置）
+  
+  * 作圖資料：
+    * 若資料本身是公開資料「且」可經網址形式直接寫在程式中下載則無需另附資料。否則
+    * 將資料上傳到本課程的分享google drive folder: <https://drive.google.com/drive/folders/19_B9LnjR4g9M8VPmbUuf4UjXXxC_JKhm?usp=sharing> 讓全班都可以看得到你的檔案 （注意，這和作業邀交處是不同的。）
+    * 上傳後，請點你檔案按滑鼠右鍵，選「get link」得到你資料檔的分享連結。
+    * 程式要引入此資料處，請依照下面datadownload code chunk去引入資料。
+    
+總結：
+
+  * 上傳到Google classroom作業繳交處：Rmd, SVG
+  
+  * 上傳到分享Google Drive Folder: 資料檔 （若公開資料且程式可下載則無需上傳）
+    
+***
+  
+  * params裡的訊息若無後製SVG可不寫imgPostName，其他都要填。
+  
+  * 圖片一定要有Title, subtitle, 及資料來源。
+
+
+```{r setup, include=FALSE, drake=F}
+knitr::opts_chunk$set(echo = TRUE, eval=F)
+library(drake)
+library(econDV)
+library(dplyr)
+
+```
+
+## makecondition
+
+```{r makecondition}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(googledrive)
+library(readr)
+library(ggplot2)
+library(econDV)
+
+font_families_google() %>%
+  stringr::str_subset(regex("noto", ignore_case = T))  
+font_add_google("Noto Sans TC") 
+
+rprojroot::is_rstudio_project -> .pj
+.pj$make_fix_file() -> .root
+
+imageFolder <- file.path(.root(),"img")
+dataFolder <- file.path(.root(),"data")
+
+if(!dir.exists(imageFolder)) dir.create(imageFolder)
+if(!dir.exists(dataFolder)) dir.create(dataFolder)
+
+xfun::download_file("https://www.dropbox.com/s/7b3nbgfx5bgft8g/drake_annotationmaps.Rdata?dl=1")
+load("drake_annotationmaps.Rdata")
+```
