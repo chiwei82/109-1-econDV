@@ -1,13 +1,13 @@
 ---
-title: "台灣景氣循環"
-drake_cache: ".chart1_sunny" # 請取一個你認為幾乎不會有人和你一樣的cache名稱
+title: "????????????循環"
+drake_cache: ".chart1_sunny" # 請???????????????為幾????????????人???????????????cache???稱
 output: html_document
 params:
-  key: "公Aa-Ⅳ-1" # 課綱編號，多個可用 ["key1", "key2"]
-  memberNames: ["Mary", "cook"] # 組員姓名
-  memberIds: ["410888292", "410772938"] # 學號
-  imgPreName: "taiwanEconomicsGrowth.svg" # ggsave時的檔名
-  imgPostName: "" # svg後製時的檔名
+  key: "???Aa-???-1" # 課綱編?????????個可??? ["key1", "key2"]
+  memberNames: ["Mary", "cook"] # 組員姓???
+  memberIds: ["410888292", "410772938"] # 學???
+  imgPreName: "taiwanEconomicsGrowth.svg" # ggsave????????????
+  imgPostName: "" # svg後製????????????
 editor_options: 
   chunk_output_type: console
 ---
@@ -33,6 +33,7 @@ library(osmdata)
 library(ggplot2)
 library(econDV)
 library(sf)
+library(tibble)
 
 font_families_google() %>%
   stringr::str_subset(regex("noto", ignore_case = T))  
@@ -59,11 +60,15 @@ drake$activeRmd$frontmatter$drake_cache <- file.path(.root(),".map")
 
 xfun::download_file("https://www.dropbox.com/s/8ndtvzqbdb4cb93/data_visulaization_pk.R?dl=1")
 source("data_visulaization_pk.R", encoding = "UTF-8")
+
+
+register_google( key = "AIzaSyBA0wN6WtykE00RN1bMMv0P9YPNIVgtR3U" , write = TRUE )
+
 ```
 
 ```{r}
 dsf_taiwan <- 
-  sf::read_sf("C:/Users/tonyf/Documents/GitHub/109-1-econDV/drake/新增資料夾")
+  sf::read_sf("C:/Users/tonyf/Documents/GitHub/109-1-econDV/drake/???增??????夾")
 ```
 
 ```{r}
@@ -117,15 +122,21 @@ dsf_newTaipei <- opq(newTaipeiBBox) %>%
 ```
 
 ```{r}
-dsf_newTaipei %>% 
-  filter(
-    stringr::str_detect(name, "土|峽|板")
-  ) %>% ggplot()+ geom_sf()
+dsf_newTaipei$osm_lines %>%
+  ggplot()+geom_sf()
 ```
 
 ```{r}
 dsf_newTaipei$osm_multipolygons %>%
-  osm_geom_rename() %>% # 多插這一行
+  osm_geom_rename() %>%
+  dplyr::filter(stringr::str_detect(name, "峽|???|???")
+  ) %>%
+  ggplot()+geom_sf()
+```
+
+```{r}
+dsf_newTaipei$osm_multipolygons %>%
+  osm_geom_rename() %>% # 多???這??????
   ggplot()+
   geom_sf(
     aes(fill=name),
