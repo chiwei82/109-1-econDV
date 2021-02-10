@@ -95,7 +95,7 @@ stringr::str_subset(osmdata::available_features(), "boundary|admin")
 
 ```{r}
 dsf_Changhua <- opq(ChanghuaBBox) %>% 
-     add_osm_feature(key="admin_level", value="5") %>%
+     add_osm_feature(key="admin_level", value="6") %>%
      osmdata::osmdata_sf() 
 ```
 
