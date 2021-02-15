@@ -85,27 +85,57 @@ source("data_visulaization_pk.R", encoding = "UTF-8") #osm_geom_rename()
 ## data
 
 ```{r}
-osmdata::getbb("Changhua") -> ChanghuaBBox
-ChanghuaBBox
+ChanghuaBBox ={
+  osmdata::getbb("Changhua") -> ChanghuaBBox
+  ChanghuaBBox
+}
 ```
 
 ```{r}
-stringr::str_subset(osmdata::available_features(), "boundary|admin")
+#stringr::str_subset(osmdata::available_features(), "boundary|admin")
 ```
 
-```{r}
-dsf_Changhua <- opq(ChanghuaBBox) %>% 
-     add_osm_feature(key="admin_level", value="6") %>%
+```{r dsf_Changhua}
+dsf_Changhua ={
+  dsf_Changhua <- opq(ChanghuaBBox) %>% 
+     add_osm_feature(key="admin_level", value="8") %>%
      osmdata::osmdata_sf() 
+  dsf_Changhua
+}
+```
+
+```{r multpoly_chunghua}
+multpoly_chunghua = {
+  dsf_Changhua$osm_multipolygons %>% osm_geom_rename() %>%
+  filter(!str_detect(`name.en`,"Zhushan|Mingjian|Nantou|Caotun|Mailiao|Erlun|Lunbei|Linnei|Citong|Xiluo")) -> multpoly_chunghua
+  multpoly_chunghua
+}
 ```
 
 ```{r}
-dsf_Changhua$osm_lines %>%
-  ggplot()+geom_sf()
+get_map(ChanghuaBBox) -> raster_cuanghua 
 ```
-
 
 ## graph
+
+```{r}
+multpoly_chunghua %>% ggplot() + geom_sf() -> plot_chunghua
+```
+
+```{r}
+raster_cuanghua %>% ggmap() -> ggmap_changhua
+```
+
+
+```{r}
+ggmap_changhua+
+  geom_sf(
+    data=multpoly_chunghua %>% osm_geom_rename, 
+    inherit.aes = FALSE,
+    alpha=0.3, fill="aliceblue"
+  )+
+  theme_void() -> ggmap_osm
+```
 
 ```{r myggplot}
 myggplot = {
