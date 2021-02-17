@@ -1,0 +1,31 @@
+---
+title: "Untitled"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+.ghToken="cef19342f50cc7fc4cc56e685f1543d99f88d70b"
+install.packages("devtools")
+install.packages("remotes")
+remotes::install_github(
+  "tpemartin/econDV" ,
+  force = TRUE
+)
+
+library(econDV)
+init_courseSetup()
+```
+
+
+```{r}
+remotes::install_github("tpemartin/econDV", force =T)
+```
+
+```{r}
+install.packages("drake")
+install.packages("devtools")
+remotes::install_github("tpemartin/rmd2drake", force=T)
+```
+

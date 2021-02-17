@@ -4,10 +4,10 @@ drake_cache: ".cache_no_one_knows" # 請取一個你認為幾乎不會有人和�
 output: html_document
 params:
   key: "MAP" # 課綱編號，多個可用 ["key1", "key2"]
-  memberNames: ["CHIWEI, FENG"] # 組員姓名
+  memberNames: ["馮紀維"] # 組員姓名
   memberIds: ["410773131"] # 學號
-  imgPreName: "#.svg" # ggsave時的檔名
-  imgPostName: "" # svg後製時的檔名
+  imgPreName: "#elect_changhua.svg" # ggsave時的檔名
+  imgPostName: "elect_changhua_boxysvg_edited.svg" # svg後製時的檔名
 editor_options: 
   chunk_output_type: console
 ---
@@ -64,6 +64,8 @@ library(readr)
 library(showtextdb)
 library(showtext)
 library(stringr)
+library(svglite)
+library(sysfonts)
 
 font_families_google() %>%
   stringr::str_subset(regex("noto", ignore_case = T))  
@@ -84,15 +86,11 @@ source("data_visulaization_pk.R", encoding = "UTF-8") #osm_geom_rename()
 
 ## data
 
-```{r}
-ChanghuaBBox ={
+```{r ChanghuaBBox}
+ChanghuaBBox={
   osmdata::getbb("Changhua") -> ChanghuaBBox
   ChanghuaBBox
 }
-```
-
-```{r}
-#stringr::str_subset(osmdata::available_features(), "boundary|admin")
 ```
 
 ```{r dsf_Changhua}
@@ -108,38 +106,181 @@ dsf_Changhua ={
 multpoly_chunghua = {
   dsf_Changhua$osm_multipolygons %>% osm_geom_rename() %>%
   filter(!str_detect(`name.en`,"Zhushan|Mingjian|Nantou|Caotun|Mailiao|Erlun|Lunbei|Linnei|Citong|Xiluo")) -> multpoly_chunghua
-  multpoly_chunghua
+   multpoly_chunghua$name.en %>% 
+     str_remove(.," Township|City") %>% str_remove(.," ")->
+    multpoly_chunghua$name.en
+   multpoly_chunghua
+}
+```
+
+```{r raster_cuanghua}
+raster_cuanghua ={
+  get_map(ChanghuaBBox) -> raster_cuanghua 
+  raster_cuanghua
+}
+```
+
+```{r elec_2020_ch}
+elec_2020_ch={
+  jsonlite::fromJSON("https://s41.aconvert.com/convert/p3r68-cdx67/s4083-ttih8.json") -> elec_2020_ch
+  elec_2020_ch
+}
+```
+
+```{r elec_2020_ch_pre}
+elec_2020_ch_pre = {
+  elec_2020_ch %>% transmute(
+    name = elec_2020_ch$name %>% str_remove(.," "),
+    orange = as.numeric(elec_2020_ch$orange) %>% round(3)  ,
+    kmt = as.numeric(elec_2020_ch$kmt)  %>% round(3),
+    dpp = as.numeric(elec_2020_ch$dpp) %>% round(3)
+  ) -> elec_2020_ch_pre
+  elec_2020_ch_pre
+}
+```
+
+```{r election_DATA_merged}
+election_DATA_merged = {
+  election_DATA_merged <- 
+  multpoly_chunghua %>%
+    osm_geom_rename() %>%
+    left_join(
+      elec_2020_ch_pre,
+      by=c("name.en"="name")
+    )
+  election_DATA_merged
+}
+```
+
+```{r list_ranges}
+list_ranges = {
+  dppRange = round(range(election_DATA_merged$dpp),1)
+list(
+  fromRange = c(1-dppRange[[2]], dppRange[[2]]),
+  toRange = c(-1,1)) -> list_ranges
+  list_ranges
+}
+```
+
+
+```{r electionData}
+electionData ={
+election_DATA_merged %>%
+    mutate(
+      dpp_rescaled=
+        scales::rescale(
+          election_DATA_merged$dpp,
+          from=list_ranges$fromRange,
+          to=list_ranges$toRange)
+        ) -> electionData
+  electionData
 }
 ```
 
 ```{r}
-get_map(ChanghuaBBox) -> raster_cuanghua 
+{
+  colorspace::diverging_hcl(n = 12, h = c(247, 120), c = 100, l = c(30, 90), power = 1.5, register = "kmt_dpp")
+}
+```
+
+```{r scale_fill_election}
+scale_fill_election = {
+  
+  breaksPal = seq(
+    from=list_ranges$toRange[[1]],
+    to=list_ranges$toRange[[2]],
+    length.out=5
+  )
+
+  labelsPal = seq(
+    from=list_ranges$fromRange[[1]],
+    to=list_ranges$fromRange[[2]],
+    length.out=5
+  )
+  
+  colorspace::scale_fill_continuous_diverging(
+    palette="kmt_dpp") -> scale_fill_election 
+
+  scale_fill_election$breaks = breaksPal
+  scale_fill_election$labels = labelsPal
+  scale_fill_election$name = "民進黨得票率"
+  
+  scale_fill_election
+}
 ```
 
 ## graph
 
-```{r}
-multpoly_chunghua %>% ggplot() + geom_sf() -> plot_chunghua
+```{r ggmap_changhua}
+ggmap_changhua={
+  raster_cuanghua %>% ggmap() -> ggmap_changhua
+  ggmap_changhua
+}
 ```
 
-```{r}
-raster_cuanghua %>% ggmap() -> ggmap_changhua
-```
-
-
-```{r}
-ggmap_changhua+
+```{r ggmap_osm_changuha}
+ggmap_osm_changuha ={
+  ggmap_changhua+
   geom_sf(
     data=multpoly_chunghua %>% osm_geom_rename, 
     inherit.aes = FALSE,
     alpha=0.3, fill="aliceblue"
-  )+
-  theme_void() -> ggmap_osm
+  )+theme_classic()  -> ggmap_osm_changuha
+  ggmap_osm_changuha
+}
 ```
+
+###Assemble ggplot
+
+```{r ggsf_region_text}
+ggsf_region_text <- {
+ ggsf_region_text <-
+  multpoly_chunghua %>% 
+    ggplot()+ geom_sf(alpha= 0.1) +
+    geom_sf_text(
+    data=multpoly_chunghua,
+    aes( label=name.en), size=3 )+
+    theme_void()
+ ggsf_region_text
+}
+```
+
+```{r gg_electionComplete}
+gg_electionComplete ={
+  gg_electionComplete <- ggmap_osm_changuha +
+    geom_sf(
+      data = electionData,
+      mapping = aes(fill = dpp_rescaled), size = 0.2, color = "white", alpha=0.7, 
+      inherit.aes = FALSE
+    ) +
+    scale_fill_election +
+  theme(
+    legend.title = element_blank(),
+    legend.key.width = unit(5,"points"),
+    legend.key.height = unit(10,"points"),
+    legend.position = c(0.16, 0.8)
+  )
+  gg_electionComplete
+} 
+```
+
+```{r ggGrid_changhua_electionMap}
+ggGrid_changhua_electionMap = {
+  gridExtra::grid.arrange(
+  gg_electionComplete,
+  ggsf_region_text,
+  nrow=1,
+  top="民進黨2020總統大選彰化市得票率"
+) -> ggGrid_changhua_electionMap
+  ggGrid_changhua_electionMap
+}
+```
+
 
 ```{r myggplot}
 myggplot = {
-  
+  myggplot<- ggGrid_changhua_electionMap
+  myggplot
 }
 ```
 
@@ -149,7 +290,7 @@ myggplot = {
 save_ggplot = {
   ggsave(
     plot=myggplot,
-    filename=file.path(imageFolder, "myPlot.svg"),
+    filename=file.path(imageFolder, "elect_changhua.svg"),
     width = 8,
     height = 5
   )
